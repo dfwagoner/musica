@@ -2,7 +2,11 @@ package wagoner.musica;
 
 import java.io.File;
 
-
+/** 
+ * Stores album data independent of format
+ * @author dwagoner
+ *
+ */
 public class Album {
 
 	private Long albumID;
