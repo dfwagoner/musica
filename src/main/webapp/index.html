@@ -1,0 +1,55 @@
+<html>
+<head>
+<style type="text/css">
+body
+{
+background-color:#d0e4fe;
+}
+h1
+{
+color:orange;
+text-align:left;
+}
+p
+{
+font-family:"Times New Roman";
+font-size:20px;
+}
+</style>
+</head>
+<body>
+
+
+<h1>Musica</h1>
+
+<p>A Database of Music</p>
+
+<form action="servlet" method="post">
+Artist:  <input type="text" size="50" name="artist" /><br />
+Album:  <input type="text" size="50" name="album" /><br />
+Label:  <input type="text" name="label" /><br />
+Catalog #:  <input type="text" name="catno" /><br />
+Country:  <input type="text" name="country" /><br />
+Year:  <input type="text" name="year" /><br />
+Genre:  <input type="text" name="genre" /><br />
+Style:  <input type="text" name="style" /><br />
+condition:  <input type="text" name="condition" /><br />
+Extra:  <input type="text" size="100" name="extra" /><br />
+Dave's Rating <input type="text" name="rating_objective" /><br />
+<input type="submit" value="Save" />
+</form>
+
+<hr />
+<h3>Research Tools</h3>
+<a href="http://www.google.com" target="_blank">...Google...</a>
+<a href="http://www.discogs.com" target="_blank">...Discogs...</a>
+<a href="http://www.musicstack.com" target="_blank">...MusicStack...</a>
+<a href="http://www.ebay.com" target="_blank">...Ebay...</a>
+
+</body>
+</html>
+
+<!-- Links and forms with method="get" will invoke doGet() method of the servlet
+and forms with method="post" will invoke doPost() method of the server -->
+
+

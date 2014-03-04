@@ -19,3 +19,5 @@ public class Artist {
 	}
 	
 }
+
+//src/main/java is the start of all your project source files
