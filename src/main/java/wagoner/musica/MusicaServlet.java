@@ -36,6 +36,9 @@ public class MusicaServlet extends HttpServlet {
 			String sleevecondition = request.getParameter("sleevecondition");
 			String extra = request.getParameter("extra");
 			String notes = request.getParameter("notes");
+			String rating = request.getParameter("dave_rating");
+			String compilation = request.getParameter("compilation_fl");
+			String owner = request.getParameter("owner");
 
 			// JDBC driver name and database URL
 			final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
@@ -54,9 +57,10 @@ public class MusicaServlet extends HttpServlet {
 			out.println(docType + "<html>\n" + "<head><title>" + title
 					+ "</title></head>\n" + "<body bgcolor=\"#f0f0f0\">\n"
 					+ "<h1 align=\"center\">" + title + "</h1>\n");
-			out.println("<h1 align=\"center\">" + request.getParameter("save") + "</h1>\n");
+			//out.println("<h1 align=\"center\">" + request.getParameter("save") + "</h1>\n");
 			Connection conn = null;
 			Statement stmt = null;
+			Statement stmt2 = null;
 
 			try {
 				// Register JDBC driver
@@ -64,13 +68,60 @@ public class MusicaServlet extends HttpServlet {
 
 				// Open a connection
 				conn = DriverManager.getConnection(DB_URL, USER, PASS);
-
+				
 				// Execute SQL query
 				stmt = conn.createStatement();
 				String sql;
-				sql = "SELECT artist_id, artist_name FROM artist;";
+				sql = "SELECT artist_name FROM artist where artist_name like '%" + artist + "%';";
 				ResultSet rs = stmt.executeQuery(sql);
 
+				if(rs.first()) {
+					
+					out.println("<hr>Artist already exists!</hr>");
+										
+				} else {
+					stmt2 = conn.createStatement();	
+					String sql2;
+					sql2 = "INSERT INTO `musica`.`artist2` " +
+							"(`artist_id`,`artist_name`)" + 
+							" VALUES (artist_id, \"" +  artist + "\");";
+										
+					String sql3;
+					String sql4;
+					sql3 = "INSERT INTO `musica`.`album` " +
+							"(`album_id`, `artist_name`, `artist_id`, `album_name`, " + 
+							"`release_date`, `label`, `genre`, `style`, `rating_dave`, " +
+							"`notes`, `compilation_fl`) VALUES (" + 
+							"album_id, \"" + artist + "\", \"" + album + "\", \"" + year + "\", \"" + label 
+							+ "\", \"" + genre + "\", \"" + style + "\", \"" + rating + "\", \"" + notes + 
+							"\", \"" + compilation + "\");";
+					sql4 = "INSERT INTO `musica`.`album_object` " +
+							"(`album_object_id`, `album_id`, `album_name`, `artist_id`, " +
+							"`artist_name`, `record_label`, `catalog_num`, " + 
+							"`upc_num`, `country`, `format`, `format_diameter`, `format_notes`, " +
+							"`media_condition`, `sleeve_condition`, `condition_ext`, `media_image`, " +
+							"`media_image2`, `media_image3`, `on_discogs`, `discogs_dt`, `owner_id`, " +
+							"`extra_1`, `extra_2`) VALUES (" + "album_object_id, " +
+							"(select album.album_id from album where album_name = \"" + album + "\"), " +
+							"\"" + album + "\", (select artist_id from artist where artist_name = \"" + 
+							artist + "\"), \"" + artist + "\", \"" + label + "\", \"" + catno + "\", null, \"" + 
+							country + "\", \"" + format + "\", null, null, \"" + mediacondition + "\", \"" + 
+							sleevecondition + "\", \"" +	extra + "\", null, null, null, null, null, \"" + 
+							owner + "\", null, null);";
+					
+					out.println("<hr>" + sql2 + "</hr>");
+					out.println("<hr>" + sql3 + "</hr>");
+					out.println("<hr>" + sql4 + "</hr>");
+					
+					/*
+					
+					stmt2.executeUpdate(sql2);
+					stmt2.executeUpdate(sql3);
+					stmt2.executeUpdate(sql4);
+					
+					*/
+				}
+				
 				// Extract data from result set
 				while (rs.next()) {
 					// Retrieve by column name
