@@ -82,7 +82,7 @@ public class MusicaServlet extends HttpServlet {
 				} else {
 					stmt2 = conn.createStatement();	
 					String sql2;
-					sql2 = "INSERT INTO `musica`.`artist2` " +
+					sql2 = "INSERT INTO `musica`.`artist` " +
 							"(`artist_id`,`artist_name`)" + 
 							" VALUES (artist_id, \"" +  artist + "\");";
 										
@@ -92,7 +92,9 @@ public class MusicaServlet extends HttpServlet {
 							"(`album_id`, `artist_name`, `artist_id`, `album_name`, " + 
 							"`release_date`, `label`, `genre`, `style`, `rating_dave`, " +
 							"`notes`, `compilation_fl`) VALUES (" + 
-							"album_id, \"" + artist + "\", \"" + album + "\", \"" + year + "\", \"" + label 
+							"album_id, \"" + artist + "\", " + 
+							"(select artist_id from artist where artist_name = \"" + artist + "\"), \"" +
+							album + "\", \"" + year + "\", \"" + label 
 							+ "\", \"" + genre + "\", \"" + style + "\", \"" + rating + "\", \"" + notes + 
 							"\", \"" + compilation + "\");";
 					sql4 = "INSERT INTO `musica`.`album_object` " +
@@ -113,13 +115,13 @@ public class MusicaServlet extends HttpServlet {
 					out.println("<hr>" + sql3 + "</hr>");
 					out.println("<hr>" + sql4 + "</hr>");
 					
-					/*
+					
 					
 					stmt2.executeUpdate(sql2);
 					stmt2.executeUpdate(sql3);
 					stmt2.executeUpdate(sql4);
 					
-					*/
+					
 				}
 				
 				// Extract data from result set
