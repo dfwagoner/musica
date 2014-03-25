@@ -232,29 +232,55 @@ public class MusicaServlet extends HttpServlet {
 				// Execute SQL query
 				stmt = conn.createStatement();
 				String sql;
+				String artistq;
 
-				sql = "SELECT * FROM album_object where artist_name like '%"
-						+ artist + "%';";
-				ResultSet album_object_resultset = stmt.executeQuery(sql);
+				sql = "SELECT album_object.artist_name, album_object.album_name, "
+						+ "album_object.format, "
+						+ "album_object.record_label, album_object.catalog_num, "
+						+ "album.release_date, album.genre, album_object.media_condition, "
+						+ "album_object.sleeve_condition, album_object.condition_ext, "
+						+ "album.notes FROM album_object, album where "
+
+						
+						+ "album_object.artist_name like '%"
+						+ artist
+						+ "%'"
+						+ " and album.genre like '%"
+						+ genre
+						+ "%'"
+						+ " and album_object.album_id = album.album_id;";
 				
+				// out.println("<h1>" + sql + "</h1>");
+				ResultSet album_object_resultset = stmt.executeQuery(sql);
+
+				album_object_resultset.first();
+				artistq = album_object_resultset.getString("artist_name");
+				// out.println("<h10>Value of artist name is: " + artistq +
+				// "</h10>");
+				out.println("<hr></hr>");
+
 				StringBuilder builder = new StringBuilder();
-				int columnCount = album_object_resultset.getMetaData().getColumnCount();
+				album_object_resultset.beforeFirst();
+				int columnCount2 = album_object_resultset.getMetaData()
+						.getColumnCount();
 				while (album_object_resultset.next()) {
-				    for (int i = 0; i < columnCount;) {
-				        builder.append(album_object_resultset.getString(i + 1));
-				        if (++i < columnCount) builder.append(",");
-				    }
-				    builder.append("\r\n");
+					for (int i = 0; i < columnCount2;) {
+						builder.append(album_object_resultset.getString(i + 1));
+						if (++i < columnCount2)
+							builder.append(",");
+
+					}
+					builder.append("\r\n");
 				}
 				String resultSetAsString = builder.toString();
-				out.println("<h10>" + resultSetAsString + "</h10>");
-				
-				
-				
-				out.println("<h1 align=\"center\">"
-						+ request.getParameter("save") + "</h1>\n");
-				out.println("<h1 align=\"center\">"
-						+ request.getParameter("query") + "</h1>\n");
+				// out.println("<h10>" + resultSetAsString + "</h10>");
+
+				/*
+				 * out.println("<h1 align=\"center\">" +
+				 * request.getParameter("save") + "</h1>\n");
+				 * out.println("<h1 align=\"center\">" +
+				 * request.getParameter("query") + "</h1>\n");
+				 */
 				out.println("<html>");
 				out.println("<head>");
 				out.println("<title>New Album Object</title>");
@@ -271,17 +297,49 @@ public class MusicaServlet extends HttpServlet {
 				out.println("<th>Extra</th>");
 				out.println("<th>Notes</th>");
 				out.println("</tr>");
-				out.println("<tr>");
-				out.println("<td><div contenteditable>" + artist + " - "
-						+ album + " (" + label + " - " + catno + ")"
-						+ "</div></td>");
-				out.println("<td>" + format + "</td>");
-				out.println("<td>" + year + "</td>");
-				out.println("<td>" + genre + "</td>");
-				out.println("<td>" + mediacondition + "</td>");
-				out.println("<td>" + sleevecondition + "</td>");
-				out.println("<td>" + extra + "</td>");
-				out.println("<td>" + notes + "</td>");
+
+				album_object_resultset.beforeFirst();
+				int columnCount = album_object_resultset.getMetaData()
+						.getColumnCount();
+				while (album_object_resultset.next()) {
+					// for (int i = 0; i < columnCount;) {
+					// build html here
+					out.println("<tr>");
+					out.println("<td style=\"width:500px\"><div contenteditable>"
+							+ album_object_resultset.getString("artist_name")
+							+ " - "
+							+ album_object_resultset.getString("album_name")
+							+ " ("
+							+ album_object_resultset.getString("record_label")
+							+ " - "
+							+ album_object_resultset.getString("catalog_num")
+							+ ")" + "</div></td>");
+					out.println("<td>"
+							+ album_object_resultset.getString("format")
+							+ "</td>");
+					out.println("<td>"
+							+ album_object_resultset.getString("release_date")
+							+ "</td>");
+					out.println("<td>"
+							+ album_object_resultset.getString("genre")
+							+ "</td>");
+					out.println("<td>"
+							+ album_object_resultset
+									.getString("media_condition") + "</td>");
+					out.println("<td>"
+							+ album_object_resultset
+									.getString("sleeve_condition") + "</td>");
+					out.println("<td>"
+							+ album_object_resultset.getString("condition_ext")
+							+ "</td>");
+					out.println("<td>"
+							+ album_object_resultset.getString("notes")
+							+ "</td>");
+
+				}
+				// builder.append("\r\n");
+				// }
+
 				out.println("</tr>");
 				out.println("</table>");
 				out.println("</body>");
