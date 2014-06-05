@@ -50,14 +50,12 @@ public class MusicaServlet extends HttpServlet {
 			// Set response content type
 			response.setContentType("text/html");
 			PrintWriter out = response.getWriter();
-			String title = "Database Result";
+			String title = "Save New Record";
 			String docType = "<!doctype html public \"-//w3c//dtd html 4.0 "
 					+ "transitional//en\">\n";
 			out.println(docType + "<html>\n" + "<head><title>" + title
 					+ "</title></head>\n" + "<body bgcolor=\"#f0f0f0\">\n"
 					+ "<h1 align=\"center\">" + title + "</h1>\n");
-			// out.println("<h1 align=\"center\">" +
-			// request.getParameter("save") + "</h1>\n");
 			Connection conn = null;
 			Statement stmt = null;
 			Statement stmt2 = null;
@@ -197,6 +195,10 @@ public class MusicaServlet extends HttpServlet {
 			PrintWriter out = response.getWriter();
 
 			String artist = request.getParameter("artist");
+			if (artist.startsWith("The ")) {
+					artist = artist.substring(4);
+			}
+			
 			String album = request.getParameter("album");
 			String label = request.getParameter("label");
 			String catno = request.getParameter("catno");
@@ -210,7 +212,10 @@ public class MusicaServlet extends HttpServlet {
 			String sleevecondition = request.getParameter("sleevecondition");
 			String extra = request.getParameter("extra");
 			String notes = request.getParameter("notes");
-
+			String rating = request.getParameter("dave_rating");
+			String compilation = request.getParameter("compilation_fl");
+			String owner = request.getParameter("owner");
+			
 			// JDBC driver name and database URL
 			final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 			final String DB_URL = "jdbc:mysql://localhost/musica";
@@ -240,23 +245,44 @@ public class MusicaServlet extends HttpServlet {
 						+ "album.release_date, album.genre, album_object.media_condition, "
 						+ "album_object.sleeve_condition, album_object.condition_ext, "
 						+ "album.notes FROM album_object, album where "
-
-						
-						+ "album_object.artist_name like '%"
+						+ "album_object.album_id = album.album_id"
+						+ " and album_object.artist_name like '%"
 						+ artist
 						+ "%'"
 						+ " and album.genre like '%"
 						+ genre
 						+ "%'"
-						+ " and album_object.album_id = album.album_id;";
-				
-				// out.println("<h1>" + sql + "</h1>");
+						+ " and album.release_date like '%"
+						+ year
+						+ "%'"
+						+ " and album.label like '%"
+						+ label
+						+ "%'"
+						+ " and album_object.format like '%"
+						+ format
+						+ "%'"
+						+ " and album_object.media_condition like '%" 
+						+ mediacondition
+						+ "%'"
+						+ " and album_object.sleeve_condition like '%"
+						+ sleevecondition
+						+ "%'"
+						+ " and album.rating_dave like '%"
+						+ rating
+						+ "%';";
+						/*+ " and album.compilation_fl = '"
+						+ compilation
+						+ "'"
+						+ " and album_object.owner_id = '"
+						+ owner
+						+ "';";
+						*/
+				//out.println("<h10>" + sql + "</h10>");
 				ResultSet album_object_resultset = stmt.executeQuery(sql);
 
 				album_object_resultset.first();
 				artistq = album_object_resultset.getString("artist_name");
-				// out.println("<h10>Value of artist name is: " + artistq +
-				// "</h10>");
+				// out.println("<h10>Value of artist name is: " + artistq + "</h10>");
 				out.println("<hr></hr>");
 
 				StringBuilder builder = new StringBuilder();
@@ -273,19 +299,13 @@ public class MusicaServlet extends HttpServlet {
 					builder.append("\r\n");
 				}
 				String resultSetAsString = builder.toString();
-				// out.println("<h10>" + resultSetAsString + "</h10>");
-
-				/*
-				 * out.println("<h1 align=\"center\">" +
-				 * request.getParameter("save") + "</h1>\n");
-				 * out.println("<h1 align=\"center\">" +
-				 * request.getParameter("query") + "</h1>\n");
-				 */
 				out.println("<html>");
 				out.println("<head>");
-				out.println("<title>New Album Object</title>");
+				out.println("<title>Query Results</title>");
 				out.println("</head>");
 				out.println("<body>");
+				out.println("<form action=\"queryservlet\" method=\"post\">");
+				//The action must equal the name of the url-pattern tag in the servlet-mapping tag
 				out.println("<table style=\"width:1000px\" border=\"1\">");
 				out.println("<tr>");
 				out.println("<th>Artist - Title (Label, Catalog#)</th>");
@@ -302,8 +322,7 @@ public class MusicaServlet extends HttpServlet {
 				int columnCount = album_object_resultset.getMetaData()
 						.getColumnCount();
 				while (album_object_resultset.next()) {
-					// for (int i = 0; i < columnCount;) {
-					// build html here
+					
 					out.println("<tr>");
 					out.println("<td style=\"width:500px\"><div contenteditable>"
 							+ album_object_resultset.getString("artist_name")
@@ -335,16 +354,20 @@ public class MusicaServlet extends HttpServlet {
 					out.println("<td>"
 							+ album_object_resultset.getString("notes")
 							+ "</td>");
-
+					
 				}
-				// builder.append("\r\n");
-				// }
-
+				
 				out.println("</tr>");
 				out.println("</table>");
+				
+				// This passes the value of artist to a new servlet, just for the hell of it.
+				// I was also initially attempting to allow the user to choose one row of the results to allow
+				// editing or matching with Discogs or something like that.
+				out.println("<input type=\"hidden\" name=\"artist\" value=\"" + artist + "\" />");
+				out.println("<input type=\"submit\" name=\"retrieve\" value=\"Query\" />");
 				out.println("</body>");
 
-				// Clean-up environment
+				// Clean up environment
 				album_object_resultset.close();
 				stmt.close();
 				conn.close();
